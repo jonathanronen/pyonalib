@@ -30,5 +30,17 @@
            }
 ```
 
+##### Logging
+```python
+from pyonalib import y_logging
+
+logger = y_logging.getLogger(__file__)
+```
+This returns a logger with a format I like, and set to the `logging.INFO` level. Specifically,
+```python
+basicConfig(format='%(asctime)s\t%(pathname)s:%(lineno)s--%(levelname)s: %(message)s', level=INFO)
+```
+
+
 ---------------------
 [@jonathanronen](https://github.com/@jonathanronen) 2015
