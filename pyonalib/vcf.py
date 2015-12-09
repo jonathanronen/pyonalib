@@ -50,7 +50,10 @@ class VCFDictReader:
         del self.metadata[-1] #The last one was the headers
         
         # Get columns list for INFO column
-        self._info_columns = self.metadata[-1].split('Format: ')[1].strip().strip('>"').split('|')
+        try:
+            self._info_columns = self.metadata[-1].split('Format: ')[1].strip().strip('>"').split('|')
+        except:
+            self._info_columns = []
         
         # Initialize a csv.DictReader from the header line
         infile.seek(0)
