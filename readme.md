@@ -15,6 +15,8 @@ qnormalized = quantile_normalize(test_matrix)
 assert(np.allclose(qnormalized, expected_normalized, atol=.1))
 ```
 
+#### IO
+
 ##### VCFReader
 ```python
     from pyonalib.vcf import VCFDictReader
@@ -42,6 +44,8 @@ assert(np.allclose(qnormalized, expected_normalized, atol=.1))
              ...
            }
 ```
+
+#### General
 
 ##### Logging
 ```python
