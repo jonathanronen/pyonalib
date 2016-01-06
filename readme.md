@@ -2,6 +2,19 @@
 
 #### Capabilities
 
+#### Preprocessing
+
+##### Quantile normalization
+```python
+from pyonalib.preprocessing import quantile_normalize
+import numpy as np
+
+test_matrix = np.array([[5,4,3], [2,1,4], [3,4,6], [4,2,8]], dtype=float)
+expected_normalized = np.array([[5.67, 4.67, 2], [2,2,3], [3, 4.67, 4.67], [4.67, 3, 5.67]])
+qnormalized = quantile_normalize(test_matrix)
+assert(np.allclose(qnormalized, expected_normalized, atol=.1))
+```
+
 ##### VCFReader
 ```python
     from pyonalib.vcf import VCFDictReader
