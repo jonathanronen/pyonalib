@@ -15,6 +15,20 @@ qnormalized = quantile_normalize(test_matrix)
 assert(np.allclose(qnormalized, expected_normalized, atol=.1))
 ```
 
+##### Histogram matching
+```python
+import numpy as np
+import seaborn as sns
+from pyonalib.preprocessing import match_histogram
+
+target = np.random.normal(1,1,1000)
+x = np.random.gamma(1,1,1000)
+x_matched = match_histogram(target, x)
+sns.kdeplot(target, label='target')
+sns.kdeplot(x, label='input')
+sns.kdeplot(x_matched, label='matched', linestyle='dashed')
+```
+
 #### IO
 
 ##### VCFReader
