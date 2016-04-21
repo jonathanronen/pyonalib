@@ -23,10 +23,10 @@ def quantile_normalize(F):
         Fnorm[ranks==rowidx] = float(rowmeans[rowidx])
     return Fnorm
 
-def match_histogram(target, x):
+def match_histogram(target, x, tiebreak_method='ordinal'):
     """
     Transforms random variable `x` so that it has the same distribution
     as random variable `target`.
     """
-    ranks = stats.rankdata(x, method='min')-1
+    ranks = stats.rankdata(x, method=tiebreak_method)-1
     return np.sort(target)[ranks]
