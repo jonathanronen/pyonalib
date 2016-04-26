@@ -5,6 +5,7 @@ Module for reading in VCF files.
 """
 
 import csv
+import pandas as pd
 
 class VCFDictReader:
     """
@@ -72,3 +73,50 @@ class VCFDictReader:
     
     def __iter__(self):
         return self
+
+class VEPDictReader:
+    """
+    """
+    def __init__(self, infile, extra_column_name='Extra'):
+        """
+        `infile` is a file-like object that supports `next(infile)` and `infile.seek()`
+        """
+        # Read in metadata lines
+        self.metadata = list()
+        for line in infile:
+            if line.startswith('#'):
+                self.metadata.append(line)
+            else:
+                break
+        del self.metadata[-1] #The last one was the headers
+        self._extra_column_name = extra_column_name
+        
+        # Get columns list for Extra column
+        colnames, coldescs = zip(*[[k.strip() for k in e.strip('# \n').split(':')] for e in reader.metadata[reader.metadata.index('## Extra column keys:\n')+1:]])
+        self._extra_columns = colnames
+        self.extra_column_descriptions = dict(zip(colnames, coldescs))
+
+        
+        # Initialize a csv.DictReader from the header line
+        infile.seek(0)
+        for i in range(len(self.metadata)):
+            next(infile)
+        self.csv_dict_reader = csv.DictReader(infile, delimiter='\t')
+    
+    def __next__(self):
+        rec = next(self.csv_dict_reader)
+        if self._extra_column_name:
+            info = dict([e.split('=') for e in rec['Extra'].split(';')])
+            rec.update(info)
+            del rec['Extra']
+        return rec
+    
+    def next(self):
+        return self.__next__()
+    
+    def __iter__(self):
+        return self
+
+def read_vep(filename):
+    with open(filename) as f:
+        return pd.concat([pd.Series(e) for e in VEPDictReader(f)], axis=1).T

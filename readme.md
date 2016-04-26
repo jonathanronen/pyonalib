@@ -59,6 +59,14 @@ sns.kdeplot(x_matched, label='matched', linestyle='dashed')
            }
 ```
 
+##### VEP
+To read outputs of ENSEMBL VEP
+```python
+from pyonalib.vcf import read_vep
+d = read_vep('file.vep.txt')
+d.head() # d is a pandas.DataFrame
+```
+
 #### General
 
 ##### Logging
