@@ -91,12 +91,6 @@ class VEPDictReader:
         del self.metadata[-1] #The last one was the headers
         self._extra_column_name = extra_column_name
         
-        # Get columns list for Extra column
-        colnames, coldescs = zip(*[[k.strip() for k in e.strip('# \n').split(':')] for e in reader.metadata[reader.metadata.index('## Extra column keys:\n')+1:]])
-        self._extra_columns = colnames
-        self.extra_column_descriptions = dict(zip(colnames, coldescs))
-
-        
         # Initialize a csv.DictReader from the header line
         infile.seek(0)
         for i in range(len(self.metadata)):
