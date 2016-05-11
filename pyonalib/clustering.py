@@ -4,7 +4,14 @@ Module with clustering-related functions
 @jona
 """
 import numpy as np
+from warnings import warn
 from joblib import Parallel, delayed
+from statsmodels.distributions.empirical_distribution import ECDF
+
+try:
+    import matplotlib.pyplot as plt
+except:
+    warn("Error importing matplotlib. Plotting functions will not work.")
 
 class ConsensusClustering:
     """
@@ -65,8 +72,24 @@ def consensus_matrix(data, clustering_method, col_sample=.8, row_sample=.8,
     yhats = p(delayed(_subsample_cluster)(clustering_method, data, col_sample, row_sample, random_seed=s) for s in seeds)
     
     # count co-clustering
-    norm_factor = np.zeros((data.shape[0], data.shape[0]))
-    CCM = np.zeros((data.shape[0], data.shape[0]))
+    CCM = yhats2ccm(yhats)
+    return CCM
+
+def yhats2ccm(yhats):
+    """
+    Given a list of cluster assignment vectors, of the form
+    yhats = [[1,0,0], [1,1,0], ...]
+    where each element of yhats is a vector of length N with the ith element
+    reperesenting the ith sample's cluster assignment,
+    computes co-clustering matrix CCM
+    where CCM[i,j] is the proportion of times the ith sample and the jth sample
+    are assigned the same cluster, when they both have cluster assignments.
+
+    Accepts yhat vectors where not all samples are assigned, with np.nan marking
+    a missing assignment.
+    """
+    norm_factor = np.zeros((len(yhats[0]), len(yhats[0])))
+    CCM = np.zeros((len(yhats[0]), len(yhats[0])))
     for yhat in yhats:
         for i in range(len(yhat)):
             if np.isnan(yhat[i]):
@@ -82,5 +105,42 @@ def consensus_matrix(data, clustering_method, col_sample=.8, row_sample=.8,
             
     return CCM/norm_factor
 
+
 def consensus_index_cdf(CCM):
-    pass
+    return ECDF(CCM[np.tril_indices_from(CCM, -1)])
+
+def _set_kwargs_for_plot(kwargs):
+    if "ax" not in kwargs:
+        kwargs['ax'] = plt.figure().add_subplot(111)
+    kwargs['color'] = kwargs.get('c') or kwargs.get('color') or next(kwargs['ax']._get_lines.prop_cycler)['color']
+
+def pac_metric(ccm, lower=.1, upper=.9):
+    """
+    Computes Percentage Ambiguous Clustering from a consensus-clustering generated
+    co-clustering matrix `ccm`.
+    The PAC is the volume of the consensus index distribution which lies between `lower` and `upper`
+    (default .1 and .9), symbolizing samples which ambiguously belong to the same cluster.
+    Sample pairs with a consensus index of <.1 or >.9 unambiguously don't, or do cluster together.
+    """
+    ci = consensus_index_cdf(ccm)
+    return ci(upper)-ci(lower)
+
+def pac_plot(ci, label='co-clustering index', x=np.arange(0,1.01,.01), ci_top=.9, ci_bottom=.1, **kwargs):
+    """
+    Make a PAC plot (ref..)
+
+    Example:
+    --------
+
+    """
+    _set_kwargs_for_plot(kwargs)
+    ax = kwargs.pop('ax')
+    pac = ci(ci_top) - ci(ci_bottom)
+    label = "{}, PAC={:.3f}".format(label, pac)
+    ax.plot(x, ci(x), label=label, **kwargs)
+    ax.plot([ci_bottom, ci_bottom], [0, 1], 'k--')
+    ax.plot([ci_top, ci_top], [0, 1], 'k--')
+    plt.xlim(0,1)
+    plt.ylim(0,1)
+    ax.legend(loc='best')
+    return ax
