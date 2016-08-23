@@ -4,6 +4,9 @@ Functions for dealing with curves, I suppose?
 @jonathanronen
 """
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 def argelbow(curve, index=None, plot=False):
     """
     Finds the elbow of a curve (for instance, singular values) using "max distance from straight line".
