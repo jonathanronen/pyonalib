@@ -50,7 +50,7 @@ def compute_smoothing_kernel(adj_matrix, alpha):
 
         F_\infty = F_0 * K
 
-    where K is the smoothing kernel.
+    where K is the [N x N] smoothing kernel and F_0 is the [M x N] data matrix to be network-smoothed.
 
     This function computes K using matrix inversion.
 
