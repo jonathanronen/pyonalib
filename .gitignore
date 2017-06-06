@@ -1,2 +1,3 @@
 *.pyc
 pyonalib.egg-info
+*/**/.ipynb_checkpoints

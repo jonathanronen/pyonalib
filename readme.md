@@ -83,10 +83,7 @@ basicConfig(format='%(asctime)s\t%(pathname)s:%(lineno)s--%(levelname)s: %(messa
 
 #### Network smoothing
 
-##### Random Walk With Restarts
-```python
-from pyonalib.network_smoothing.random_walk import compute_smoothing_kernel
-```
+[Jupyter notebook example](examples/network_smoothing.ipynb)
 
 
 ---------------------
