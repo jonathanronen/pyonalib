@@ -19,9 +19,6 @@ def _guess_feature_axis_from_new_features(data, new_features):
 
 def project_to_network(data, new_features, missing_value=0, feature_axis='auto'):
     """
-    Takes AxB expression_dataframe and projects it onto CxB dataframe where B is len(new_features).
-    Values for genes in `new_features` that are not present in `expression_dataframe.index` are set to 0.
-
     Project data dataframe onto a different feature space defined by `new_features`. Features in `new_features` that are missing from `data` are set to `missing_value`,
     while features from `new_features` that exist in `data` are kept.
 
@@ -34,9 +31,9 @@ def project_to_network(data, new_features, missing_value=0, feature_axis='auto')
     if feature_axis == 1:
         data = data.T
 
-    expression_in_new_space = pd.DataFrame(np.zeros((len(new_features), expression_dataframe.shape[1])), index=smoothing_genes, columns=expression_dataframe.columns)
-    genes_in_both = list(set(expression_dataframe.index) & set(smoothing_genes))
-    expression_in_new_space.loc[genes_in_both,:] = expression_dataframe.loc[genes_in_both,:]
+    expression_in_new_space = pd.DataFrame(np.zeros((len(new_features), data.shape[1])), index=new_features, columns=data.columns)
+    genes_in_both = list(set(data.index) & set(new_features))
+    expression_in_new_space.loc[genes_in_both,:] = data.loc[genes_in_both,:]
 
     return expression_in_new_space if feature_axis==0 else expression_in_new_space.T
 

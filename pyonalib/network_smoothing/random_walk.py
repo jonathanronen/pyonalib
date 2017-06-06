@@ -84,10 +84,10 @@ def smooth_with_kernel(expr_matrix, kernel, transpose='auto'):
     transpose = _need_transpose(expr_matrix, kernel) if transpose=='auto' else transpose
 
     if transpose:
-        return pd.DataFrame(np.dot(expr_matrix.T, K), index=expr_matrix.index,
+        return pd.DataFrame(np.dot(expr_matrix.T, kernel), index=expr_matrix.index,
                            columns=expr_matrix.columns).T
     else:
-        return pd.DataFrame(np.dot(expr_matrix, K), index=expr_matrix.index,
+        return pd.DataFrame(np.dot(expr_matrix, kernel), index=expr_matrix.index,
                            columns=expr_matrix.columns)
 
 def smooth_by_mtx_inv(expr_matrix, adj_matrix, alpha, transpose='auto'):
