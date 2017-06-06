@@ -61,7 +61,7 @@ def project_from_network_recombine(original_expression, smoothed_expression, fea
 
     return expr_in_e_space_smoothed if feature_axis==0 else expr_in_e_space_smoothed.T
 
-def smooth_and_recombine(expression_dataframe, smoothing_function, smoothing_genes, feature_axis='auto'):
+def smooth_and_recombine(expression_dataframe, smoothing_function, smoothing_genes='all', feature_axis='auto'):
     """
     Performs network smoothing when data feature space and smoothing network nodes dont overlap perfectly
 
@@ -69,8 +69,15 @@ def smooth_and_recombine(expression_dataframe, smoothing_function, smoothing_gen
       2. perform network smoothing (by `smoothing_function)
       3. project smoothed data back onto original space
 
-    The function `smoothing_function` should take in the expression pd.DataFrame (genes X samples) and return a pd.DataFrame of the same dimensions.
+        `expression_dataframe`: pd.DataFrame of expression_dataframe
+        `smoothing_function`:   a callable that takes expression dataframe and returns the smoothed expression in same dimensions as input
+        `smoothing_genes`:      list of features for `expression_dataframe` to be projected onto. if 'all', assumes expression_dataframe and smoothing network have all the same genes.
+        `feature_axis`:         which axis of `expression_dataframe` is features; 0 for rows, 1 for columns, 'auto' for a guess
     """
+    gene_axis = _guess_feature_axis_from_shape(expression_dataframe) if feature_axis=='auto' else feature_axis
+    if smoothing_genes == 'auto':
+        smoothing_genes = list(expression_dataframe.index) if gene_axis==0 else list(expression_dataframe.columns)
+
     expression_in_network_space = project_to_network(expression_dataframe, smoothing_genes, feature_axis=feature_axis)
     expr_in_network_space_smoothed = smoothing_function(expression_in_network_space)
     expr_in_e_space_smoothed = project_from_network_recombine(expression_dataframe, expr_in_network_space_smoothed, feature_axis=feature_axis)
