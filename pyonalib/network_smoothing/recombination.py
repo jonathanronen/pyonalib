@@ -75,7 +75,7 @@ def smooth_and_recombine(expression_dataframe, smoothing_function, smoothing_gen
         `feature_axis`:         which axis of `expression_dataframe` is features; 0 for rows, 1 for columns, 'auto' for a guess
     """
     gene_axis = _guess_feature_axis_from_shape(expression_dataframe) if feature_axis=='auto' else feature_axis
-    if smoothing_genes == 'auto':
+    if isinstance(smoothing_genes, str) and smoothing_genes == 'auto':
         smoothing_genes = list(expression_dataframe.index) if gene_axis==0 else list(expression_dataframe.columns)
 
     expression_in_network_space = project_to_network(expression_dataframe, smoothing_genes, feature_axis=feature_axis)
