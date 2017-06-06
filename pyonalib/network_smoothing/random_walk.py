@@ -89,8 +89,8 @@ def smooth_with_kernel(expr_matrix, kernel, transpose='auto'):
     transpose = _need_transpose(expr_matrix, kernel) if transpose=='auto' else transpose
 
     if transpose:
-        return pd.DataFrame(np.dot(expr_matrix.T, kernel), index=expr_matrix.index,
-                           columns=expr_matrix.columns).T
+        return pd.DataFrame(np.dot(expr_matrix.T, kernel), index=expr_matrix.columns,
+                           columns=expr_matrix.index).T
     else:
         return pd.DataFrame(np.dot(expr_matrix, kernel), index=expr_matrix.index,
                            columns=expr_matrix.columns)
