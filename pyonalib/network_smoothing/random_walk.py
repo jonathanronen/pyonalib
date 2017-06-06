@@ -78,9 +78,14 @@ def smooth_with_kernel(expr_matrix, kernel, transpose='auto'):
     Perform smoothing of `expr_matrix` using provided kernel.
 
             expr_matrix: [M x N] the data matrix to be smoothed.
-            kernel:      [N x N] smoothing kernel.
+            kernel:      [N x N] smoothing kernel ndarray-like object.
+                         Also accepts path to .pkl file containing the kernel.
             transpose:   If True, `expr_matrix` is [N x M] and will be transposed prior to smoothing and before returning. If 'auto', guess from dimensions.
     """
+    if isinstance(kernel, str):
+        with open(kernel, 'rb') as f:
+            kernel = pickle.load(f)
+
     transpose = _need_transpose(expr_matrix, kernel) if transpose=='auto' else transpose
 
     if transpose:
