@@ -15,6 +15,7 @@ The iterative process is guaranteed to converge so long as the rows of A is row-
 [1]: random walk network smoothing paper...
 """
 
+import pickle
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import normalize
