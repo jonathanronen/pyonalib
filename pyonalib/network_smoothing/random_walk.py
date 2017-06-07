@@ -18,6 +18,7 @@ The iterative process is guaranteed to converge so long as the rows of A is row-
 import pickle
 import numpy as np
 import pandas as pd
+from scipy import io
 from sklearn.preprocessing import normalize
 
 from scipy import io, linalg, sparse
@@ -102,10 +103,13 @@ def smooth_by_mtx_inv(expr_matrix, adj_matrix, alpha, transpose='auto'):
     See `compute_smoothing_kernel`.
 
         expr_matrix: [M x N] the data matrix to be smoothed.
-        adj_matrix:  [N x N] adjacency matrix defining the graph to smooth on. Will be row-normalized.
+        adj_matrix:  [N x N] adjacency matrix defining the graph to smooth on. Will be row-normalized
+                     also accepts path to '.mtx' file containing adj_matrix
         alpha:       1 - the restart probability.
         transpose:   If True, `expr_matrix` is [N x M] and will be transposed prior to smoothing and before returning. If 'auto', guess from dimensions.
     """
+    if isinstance(adj_matrix, str):
+        adj_matrix = io.mmread(adj_matrix)
     K = compute_smoothing_kernel(adj_matrix, alpha)
     return smooth_with_kernel(expr_matrix, K, transpose=transpose)
 
