@@ -18,9 +18,8 @@ The iterative process is guaranteed to converge so long as the rows of A is row-
 import pickle
 import numpy as np
 import pandas as pd
-from scipy import io
+from warnings import warn
 from sklearn.preprocessing import normalize
-
 from scipy import io, linalg, sparse
 
 def _need_transpose(expr_matrix, adj_matrix):
@@ -42,6 +41,9 @@ def smooth_by_iterations(expr_matrix, adj_matrix, alpha, tol=1e-9, max_iter=100,
     transpose = _need_transpose(expr_matrix, adj_matrix) if transpose=='auto' else transpose
     if transpose:
         expr_matrix = expr_matrix.T
+    if sparse.issparse(adj_matrix):
+        warn("Calling todense() on sparse adj_matrix. This might crash your system.")
+        adj_matrix = adj_matrix.todense()
     Anorm = np.matrix(normalize(adj_matrix, axis=1, norm='l1'))
     Fs = [expr_matrix]
     for i in range(1, max_iter+1):
