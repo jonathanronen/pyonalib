@@ -8,7 +8,7 @@ import functools
 
 class Store(object):
     def __init__(self, path):
-        self.path = os.path.join(path, '.memoize')
+        self.path = path
         os.makedirs(self.path, exist_ok=True)
 
     def _get_path_for_key(self, key):
@@ -30,27 +30,29 @@ class Store(object):
         return os.path.isfile(self._get_path_for_key(key))
 
 class memoize():
-    def __init__(self, func, store_dir=os.getcwd()):
-        self.func = func
+    def __init__(self, store_dir=os.path.join(os.getcwd(), '.memoize')):
         self.store = Store(store_dir)
-        functools.update_wrapper(self, func)
 
-    def __call__(self, *args, **kwargs):
-        key = self._get_key(*args, **kwargs)
-        if key not in self.store:
-            val = self.func(*args, **kwargs)
-            self.store.put(key, val)
-        return self.store.get(key)
+    def __call__(self, func):
+        def wrapped_f(*args, **kwargs):
+            key = self._get_key(func, *args, **kwargs)
+            if key not in self.store:
+                val = func(*args, **kwargs)
+                self.store.put(key, val)
+            return self.store.get(key)
+        functools.update_wrapper(wrapped_f, func)
+        return wrapped_f
+
 
     def _arg_hash(self, *args, **kwargs):
         _str = pickle.dumps(args, 2) + pickle.dumps(kwargs, 2)
         return hashlib.md5(_str).hexdigest()
 
-    def _src_hash(self):
-        _src = inspect.getsource(self.func)
+    def _src_hash(self, func):
+        _src = inspect.getsource(func)
         return hashlib.md5(_src.encode()).hexdigest()
 
-    def _get_key(self, *args, **kwargs):
+    def _get_key(self, func, *args, **kwargs):
         arg = self._arg_hash(*args, **kwargs)
-        src = self._src_hash()
+        src = self._src_hash(func)
         return src + '_' + arg
