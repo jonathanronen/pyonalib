@@ -16,7 +16,7 @@ class Store(object):
 
     def put(self, key, value):
         with gzip.open(self._get_path_for_key(key), 'wb') as f:
-            pickle.dump(value, f)
+            pickle.dump(value, f, protocol=4)
 
     def get(self, key):
         try:
