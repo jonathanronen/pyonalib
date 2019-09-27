@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='pyonalib',
-      version='0.1.2',
+      version='0.1.3',
       description="yona's python lib for things",
       author='Jonathan Ronen',
       license='GPLv2',
